@@ -16,7 +16,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}  # Uses the built-in token
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0   # 👈 Important: fetch full history
 
       - name: Add daily commit marker by 24f2005894@ds.study.iitm.ac.in
         run: |
@@ -25,4 +26,7 @@ jobs:
           git config user.email "24f2005894@ds.study.iitm.ac.in"
           git add last_run.txt
           git commit -m "Daily commit on $(date -u)" || echo "No changes to commit"
-          git push
+
+          # 👇 Ensure we have the latest remote commits before pushing
+          git pull --rebase origin main
+          git push origin main
