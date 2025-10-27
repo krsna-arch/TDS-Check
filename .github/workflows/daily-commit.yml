@@ -2,31 +2,23 @@ name: Daily Commit
 
 on:
   schedule:
-    - cron: "30 10 * * *"
-  workflow_dispatch:
-
-permissions:
-  contents: write
+    - cron: '17 4 * * *'  # Runs daily at 04:17 UTC (adjust as needed)
 
 jobs:
-  commit-job:
+  commit:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 0   # 👈 Important: fetch full history
 
-      - name: Add daily commit marker by 24f2005894@ds.study.iitm.ac.in
+      - name: Update timestamp
         run: |
-          echo "Last run on $(date -u)" > last_run.txt
-          git config user.name "GitHub Action Bot"
+          echo "Last run: $(date -u)" > last_run.txt
+
+      - name: Commit changes
+        run: |
+          git config user.name "GitHub Action"
           git config user.email "24f2005894@ds.study.iitm.ac.in"
           git add last_run.txt
-          git commit -m "Daily commit on $(date -u)" || echo "No changes to commit"
-
-          # 👇 Ensure we have the latest remote commits before pushing
-          git pull --rebase origin main
-          git push origin main
+          git commit -m "Daily update: $(date -u)" || echo "No changes to commit"
+          git push
